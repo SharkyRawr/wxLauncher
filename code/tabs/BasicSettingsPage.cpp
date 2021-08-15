@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "generated/configure_launcher.h"
 
 #if HAS_SDL == 1
-#include "SDL.h"
+#include <SDL.h>
 #endif
 
 #include "tabs/BasicSettingsPage.h"

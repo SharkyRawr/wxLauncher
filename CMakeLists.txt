@@ -1,7 +1,7 @@
 # let's go with lower case for commands (or at least be consistent)
 # arbitrarily following http://techbase.kde.org/Policies/CMake_Coding_Style#Upper.2Flower_casing
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0)
 if(CMAKE_MAJOR_VERSION GREATER 2)
   # Continue to support compatiable interface for _DEBUG on targets
   # see: http://www.cmake.org/cmake/help/v3.0/policy/CMP0043.html
@@ -82,7 +82,7 @@ endif()
   
 if(NOT PYTHON_EXECUTABLE)
   # Only try to find python iff not already given
-  include(FindPythonInterp) #PYTHON_EXECUTABLE
+  find_package (Python3 COMPONENTS Interpreter)
 endif()
 
 option(onlinehelpmaker_debug "Have the onlinehelpmaker.py script output debug information" OFF)
@@ -144,40 +144,11 @@ if(USE_OPENAL)
   include_directories(${OPENAL_INCLUDE_DIR})
 endif(USE_OPENAL)
 
-if(IS_APPLE)
-    # look for SDL2
-    find_library(SDL2_FRAMEWORK SDL2)
-    if (NOT SDL2_FRAMEWORK)
-        message(FATAL_ERROR "SDL2 not found")
-    endif()
-    set(SDL2_INCLUDES ${SDL2_FRAMEWORK}/Headers)
-    set(SDL2_LIBRARIES ${SDL2_FRAMEWORK})
 
-    # from https://github.com/scp-fs2open/fs2open.github.com/blob/master/cmake/platform-darwin.cmake
-    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9")
-    # required to get SDL2.framework to work
-    SET(CMAKE_SKIP_RPATH FALSE)
-    SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-    SET(CMAKE_INSTALL_RPATH @loader_path/../Frameworks/)
-elseif(UNIX)
-    INCLUDE(FindPkgConfig)
+INCLUDE(FindPkgConfig)
+PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
+set(SDL2_INCLUDES ${SDL2_INCLUDE_DIRS})
 
-    PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
-    set(SDL2_INCLUDES ${SDL2_INCLUDE_DIRS})
-else()
-    set(SDL2_INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/SDL2-2_0_3/include")
-
-    IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
-        # 64-bit
-        set(ARCH "x64")
-    ELSE(CMAKE_SIZEOF_VOID_P EQUAL 8)
-        # 32-bit
-        set(ARCH "x86")
-    ENDIF(CMAKE_SIZEOF_VOID_P EQUAL 8)
-
-    set(SDL2_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/SDL2-2_0_3/lib/${ARCH}/SDL2.lib")
-    set(SDL2_DLL "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/SDL2-2_0_3/lib/${ARCH}/SDL2.dll")
-endif()
 
 include_directories(${SDL2_INCLUDES})
 set(HAS_SDL true)
